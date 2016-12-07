@@ -29,6 +29,16 @@ var htmlPlugin = html();
 var webpackPlugins = [];
 webpackPlugins = webpackPlugins.concat(htmlPlugin);
 
+if (conf.CONFIG_BUILD.env == 'prod') {
+  webpackPlugins.push(
+    new webpack.optimize.UglifyJsPlugin({
+      compress: {
+        warnings: false,
+        drop_console: true
+      }
+    })
+  )
+}
 
 // 生成各种 loader
 var cssExtract = new ExtractTextPlugin('[name]_[contenthash].css');
@@ -41,7 +51,9 @@ webpackLoaders = webpackLoaders.concat(loaders)
 var webpackConfig = {
   entry: entrys,
 
-  devtool: 'eval',
+  devtool: conf.CONFIG_BUILD.env == 'dev' ? 'eval' : false,
+
+  cache: conf.CONFIG_BUILD.env == 'dev' ? true : false,
 
   output: {
     path: 'dist',
