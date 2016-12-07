@@ -1,3 +1,5 @@
+require('shelljs/global');
+
 var webpack = require('webpack');
 var minimist = require('minimist');
 var conf = require('./build/conf.js');
@@ -5,6 +7,7 @@ var entry = require('./build/entry.js');
 var html = require('./build/html.js');
 var loader = require('./build/loader.js');
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
+var CommonsChunkPlugin = require("webpack/lib/optimize/CommonsChunkPlugin");
 
 // env 配置
 var knownOptions = {
@@ -22,12 +25,22 @@ conf.setConf({
 
 console.info('config is:\n--------------\n', conf.CONFIG_BUILD, '\n--------------');
 
+// 删除上次的构建
+rm('-rf', conf.CONFIG_BUILD.path);
+
 var entrys = entry();
 
-// 生成 ejs 模板插件
+// 生成 ejs 模板 plugins
 var htmlPlugin = html();
 var webpackPlugins = [];
 webpackPlugins = webpackPlugins.concat(htmlPlugin);
+
+webpackPlugins.push(
+  new CommonsChunkPlugin({
+    name: conf.CONFIG_BUILD.staticRoot + '/common',
+    minChunks: 2
+  })
+)
 
 if (conf.CONFIG_BUILD.env == 'prod') {
   webpackPlugins.push(
@@ -51,12 +64,12 @@ webpackLoaders = webpackLoaders.concat(loaders)
 var webpackConfig = {
   entry: entrys,
 
-  devtool: conf.CONFIG_BUILD.env == 'dev' ? 'eval' : false,
+  devtool: conf.CONFIG_BUILD.env == 'dev' ? 'source-map' : false,
 
   cache: conf.CONFIG_BUILD.env == 'dev' ? true : false,
 
   output: {
-    path: 'dist',
+    path: conf.CONFIG_BUILD.path,
     filename: "[name]_[chunkhash].js"
   },
 

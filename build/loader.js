@@ -36,7 +36,7 @@ var createLoader = function (cssExtract) {
       loader: 'url',
       query: {
         limit: 1000,
-        name: config.staticRoot + '/assets/[name].[hash:7].[ext]'
+        name: config.staticRoot + '/assets_url/[name].[hash:7].[ext]'
       }
     }
   ];
