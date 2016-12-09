@@ -16,7 +16,7 @@ var createHTMLPlugin = function () {
     var file = path.parse(file);
 
     var chunks = [];
-    var chunkName = file.dir + '/' + file.name;
+    var chunkName = config.staticRoot + '/' + file.dir + '/' + file.name;
 
     // 判断是否有同名的 entry
     var c = entrys[chunkName];
